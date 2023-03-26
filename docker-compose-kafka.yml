@@ -83,8 +83,9 @@ services:
       - zk3
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: ${MY_IP}:22181,${MY_IP}:32181,${MY_IP}:42181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${MY_IP}:19092
+      KAFKA_ZOOKEEPER_CONNECT: ${HOST_IP}:22181,${HOST_IP}:32181,${HOST_IP}:42181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_IP}:19092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     volumes:
       - ./kafka/kafka1/data:/var/lib/kafka/data
       # - ./kafka/kafka3/secrets:/var/lib/kafka/secrets
@@ -103,8 +104,9 @@ services:
       - zk3
     environment:
       KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: ${MY_IP}:22181,${MY_IP}:32181,${MY_IP}:42181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${MY_IP}:29092
+      KAFKA_ZOOKEEPER_CONNECT: ${HOST_IP}:22181,${HOST_IP}:32181,${HOST_IP}:42181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_IP}:29092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     volumes:
       - ./kafka/kafka2/data:/var/lib/kafka/data
       # - ./kafka/kafka3/secrets:/var/lib/kafka/secrets
@@ -123,8 +125,9 @@ services:
       - zk3
     environment:
       KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: ${MY_IP}:22181,${MY_IP}:32181,${MY_IP}:42181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${MY_IP}:39092
+      KAFKA_ZOOKEEPER_CONNECT: ${HOST_IP}:22181,${HOST_IP}:32181,${HOST_IP}:42181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_IP}:39092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     volumes:
       - ./kafka/kafka3/data:/var/lib/kafka/data
       # - ./kafka/kafka3/secrets:/var/lib/kafka/secrets

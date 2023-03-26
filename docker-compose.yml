@@ -40,12 +40,12 @@ services:
             dockerfile: worker.dockerfile
         container_name: worker1
         environment:
-            KAFKA_BROKERS: '${MY_IP}:19092,${MY_IP}:29092,${MY_IP}:39092'
+            KAFKA_BROKERS: '${HOST_IP}:19092,${HOST_IP}:29092,${HOST_IP}:39092'
             KAFKA_CLIENT_ID: 'my-client'
             POSTGRES_DBNAME: 'postgres_db'
             POSTGRES_USERNAME: 'root'
             POSTGRES_PASSWORD: 'postgres'
-            POSTGRES_HOST: '${MY_IP}'
+            POSTGRES_HOST: '${HOST_IP}'
             POSTGRES_PORT: 5432
             POSTGRES_SSL_MODE: 'disable'
             POSTGRES_DRIVER_NAME: 'postgres'
@@ -59,12 +59,12 @@ services:
             dockerfile: worker.dockerfile
         container_name: worker2
         environment:
-            KAFKA_BROKERS: '${MY_IP}:19092,${MY_IP}:29092,${MY_IP}:39092'
+            KAFKA_BROKERS: '${HOST_IP}:19092,${HOST_IP}:29092,${HOST_IP}:39092'
             KAFKA_CLIENT_ID: 'my-client'
             POSTGRES_DBNAME: 'postgres_db'
             POSTGRES_USERNAME: 'root'
             POSTGRES_PASSWORD: 'postgres'
-            POSTGRES_HOST: '${MY_IP}'
+            POSTGRES_HOST: '${HOST_IP}'
             POSTGRES_PORT: 5432
             POSTGRES_SSL_MODE: 'disable'
             POSTGRES_DRIVER_NAME: 'postgres'
@@ -81,12 +81,12 @@ services:
             - "9091:9091"
         environment:
             LISTEN_ADDRESS: '0.0.0.0:9091'
-            KAFKA_BROKERS: '${MY_IP}:19092,${MY_IP}:29092,${MY_IP}:39092'
+            KAFKA_BROKERS: '${HOST_IP}:19092,${HOST_IP}:29092,${HOST_IP}:39092'
             KAFKA_CLIENT_ID: 'my-client'
             POSTGRES_DBNAME: 'postgres_db'
             POSTGRES_USERNAME: 'root'
             POSTGRES_PASSWORD: 'postgres'
-            POSTGRES_HOST: '${MY_IP}'
+            POSTGRES_HOST: '${HOST_IP}'
             POSTGRES_PORT: 5432
             POSTGRES_SSL_MODE: 'disable'
             POSTGRES_DRIVER_NAME: 'postgres'
