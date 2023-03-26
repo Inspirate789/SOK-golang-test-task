@@ -16,13 +16,13 @@ COPY ./internal ./internal
 COPY ./pkg ./pkg
 
 # Build the binary
-RUN go build ./cmd/api/main.go -o /api
+RUN go build -o /api ./cmd/api
 
 ## Deploy
 FROM scratch
 
 # Copy our static executable
-COPY --from=build /cmd/api /api
+COPY --from=build /api /api
 #COPY backend.env /
 
 EXPOSE 9091

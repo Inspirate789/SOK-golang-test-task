@@ -1,9 +1,9 @@
-version: '3'
+version: '3.8'
 
 services:
     postgres:
         container_name: postgres
-        image: postgres:15.2
+        image: postgres:15.2-alpine3.17
         environment:
             POSTGRES_DB: postgres_db
             POSTGRES_USER: root
@@ -42,13 +42,14 @@ services:
         environment:
             KAFKA_BROKERS: '${MY_IP}:19092,${MY_IP}:29092,${MY_IP}:39092'
             KAFKA_CLIENT_ID: 'my-client'
-            POSTGRES_DBNAME: postgres_db
-            POSTGRES_USERNAME: root
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_HOST: ${MY_IP}
+            POSTGRES_DBNAME: 'postgres_db'
+            POSTGRES_USERNAME: 'root'
+            POSTGRES_PASSWORD: 'postgres'
+            POSTGRES_HOST: '${MY_IP}'
             POSTGRES_PORT: 5432
-            POSTGRES_SSL_MODE: disable
-            POSTGRES_DRIVER_NAME: postgres
+            POSTGRES_SSL_MODE: 'disable'
+            POSTGRES_DRIVER_NAME: 'postgres'
+        restart: always
         depends_on:
             postgres:
                 condition: service_healthy
@@ -60,13 +61,14 @@ services:
         environment:
             KAFKA_BROKERS: '${MY_IP}:19092,${MY_IP}:29092,${MY_IP}:39092'
             KAFKA_CLIENT_ID: 'my-client'
-            POSTGRES_DBNAME: postgres_db
-            POSTGRES_USERNAME: root
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_HOST: ${MY_IP}
+            POSTGRES_DBNAME: 'postgres_db'
+            POSTGRES_USERNAME: 'root'
+            POSTGRES_PASSWORD: 'postgres'
+            POSTGRES_HOST: '${MY_IP}'
             POSTGRES_PORT: 5432
-            POSTGRES_SSL_MODE: disable
-            POSTGRES_DRIVER_NAME: postgres
+            POSTGRES_SSL_MODE: 'disable'
+            POSTGRES_DRIVER_NAME: 'postgres'
+        restart: always
         depends_on:
             postgres:
                 condition: service_healthy
@@ -81,13 +83,14 @@ services:
             LISTEN_ADDRESS: '0.0.0.0:9091'
             KAFKA_BROKERS: '${MY_IP}:19092,${MY_IP}:29092,${MY_IP}:39092'
             KAFKA_CLIENT_ID: 'my-client'
-            POSTGRES_DBNAME: postgres_db
-            POSTGRES_USERNAME: root
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_HOST: ${MY_IP}
+            POSTGRES_DBNAME: 'postgres_db'
+            POSTGRES_USERNAME: 'root'
+            POSTGRES_PASSWORD: 'postgres'
+            POSTGRES_HOST: '${MY_IP}'
             POSTGRES_PORT: 5432
-            POSTGRES_SSL_MODE: disable
-            POSTGRES_DRIVER_NAME: postgres
+            POSTGRES_SSL_MODE: 'disable'
+            POSTGRES_DRIVER_NAME: 'postgres'
+        restart: always
         depends_on:
             postgres:
                 condition: service_healthy

@@ -16,7 +16,7 @@ COPY ./internal ./internal
 COPY ./pkg ./pkg
 
 # Build the binary
-RUN go build ./cmd/worker/main.go -o /worker
+RUN go build -o /worker ./cmd/worker
 
 ## Deploy
 FROM scratch

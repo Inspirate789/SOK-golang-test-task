@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/Inspirate789/SOK-golang-test-task/cmd/worker/processor"
 	"github.com/Inspirate789/SOK-golang-test-task/internal/transactions/consumer"
@@ -10,6 +9,7 @@ import (
 	transactionsUseCase "github.com/Inspirate789/SOK-golang-test-task/internal/transactions/usecase"
 	UsersRepo "github.com/Inspirate789/SOK-golang-test-task/internal/users/repository"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/namsral/flag"
 	"github.com/rs/zerolog"
 	"os"
@@ -57,32 +57,22 @@ func init() {
 	flag.Parse()
 }
 
-func NewDB() (*sqlx.DB, error) {
-	postgresInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+func main() {
+	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
+
+	db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		pgHost,
 		pgPort,
 		pgUsername,
 		pgPassword,
 		pgDbName,
-		pgSslMode)
-
-	sqlDB, err := sql.Open("postgres", postgresInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	err = sqlDB.Ping()
-
-	return sqlx.NewDb(sqlDB, pgDriverName), nil
-}
-
-func main() {
-	logger := zerolog.Logger{}.Level(zerolog.InfoLevel)
-	db, err := NewDB()
+		pgSslMode,
+	))
 	if err != nil {
 		logger.Fatal().Err(err)
 	}
 	defer db.Close()
+
 	proc := processor.NewKafkaProcessor(&processor.KafkaProcessorConfig{
 		BrokerUrls:      strings.Split(kafkaBrokerUrls, ","),
 		ClientID:        kafkaClientId,

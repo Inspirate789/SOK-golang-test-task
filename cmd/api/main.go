@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/Inspirate789/SOK-golang-test-task/cmd/api/middleware"
 	"github.com/Inspirate789/SOK-golang-test-task/cmd/api/server"
@@ -12,6 +11,7 @@ import (
 	usersUseCase "github.com/Inspirate789/SOK-golang-test-task/internal/users/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/namsral/flag"
 	"github.com/rs/zerolog"
 	"net/http"
@@ -62,25 +62,6 @@ func init() {
 	flag.Parse()
 }
 
-func NewDB() (*sqlx.DB, error) {
-	postgresInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		pgHost,
-		pgPort,
-		pgUsername,
-		pgPassword,
-		pgDbName,
-		pgSslMode)
-
-	sqlDB, err := sql.Open("postgres", postgresInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	err = sqlDB.Ping()
-
-	return sqlx.NewDb(sqlDB, pgDriverName), nil
-}
-
 func NewGinRouter(db *sqlx.DB, logger *zerolog.Logger) *gin.Engine {
 	router := gin.Default()
 	router.UseRawPath = true
@@ -113,14 +94,22 @@ func ExitServer(logger *zerolog.Logger, srv *server.Server) {
 }
 
 func main() {
-	logger := zerolog.Logger{}.Level(zerolog.InfoLevel)
-	db, err := NewDB()
+	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
+
+	db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		pgHost,
+		pgPort,
+		pgUsername,
+		pgPassword,
+		pgDbName,
+		pgSslMode,
+	))
 	if err != nil {
 		logger.Fatal().Err(err)
 	}
 	defer db.Close()
-	srv := server.NewServer(listenAddrApi, NewGinRouter(db, &logger))
 
+	srv := server.NewServer(listenAddrApi, NewGinRouter(db, &logger))
 	go func() {
 		err = srv.Start()
 		if err != nil && err != http.ErrServerClosed {

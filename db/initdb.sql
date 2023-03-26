@@ -1,3 +1,5 @@
+create user postgres superuser;
+
 create table public.users(
     id int generated always as identity primary key,
     name text unique not null,

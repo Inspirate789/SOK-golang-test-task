@@ -5,6 +5,7 @@ import (
 	"github.com/Inspirate789/SOK-golang-test-task/internal/models"
 	"github.com/Inspirate789/SOK-golang-test-task/pkg/dbutils"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 )
 
@@ -21,16 +22,13 @@ func (ur *pgRepository) CreateUser(name string) (int, error) {
 		"name":    name,
 		"balance": 0,
 	}
-	res, err := dbutils.NamedExec(context.Background(), ur.db, insertUserQuery, args)
-	if err != nil {
-		return 0, errors.Wrap(err, "database error (table: users, method: CreateUser)")
-	}
-	id, err := res.LastInsertId()
+	var id int
+	err := dbutils.NamedGet(context.Background(), ur.db, &id, insertUserQuery, args)
 	if err != nil {
 		return 0, errors.Wrap(err, "database error (table: users, method: CreateUser)")
 	}
 
-	return int(id), nil
+	return id, nil
 }
 
 func (ur *pgRepository) DeleteUser(id int) error {

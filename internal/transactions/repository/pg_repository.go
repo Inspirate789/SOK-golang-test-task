@@ -5,6 +5,7 @@ import (
 	"github.com/Inspirate789/SOK-golang-test-task/internal/transactions/consumer"
 	"github.com/Inspirate789/SOK-golang-test-task/pkg/dbutils"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 )
 

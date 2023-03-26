@@ -17,8 +17,8 @@ func NewDelivery(router *gin.Engine, uuc userUseCase.UseCase) {
 		userUC: uuc,
 	}
 	router.POST("/user", handler.createUser)
-	router.DELETE("/user", handler.getBalance)
-	router.GET("/balance", handler.deleteUser)
+	router.DELETE("/user", handler.deleteUser)
+	router.GET("/balance", handler.getBalance)
 }
 
 func (d *delivery) createUser(ctx *gin.Context) {
