@@ -77,7 +77,7 @@ func main() {
 		BrokerUrls:      strings.Split(kafkaBrokerUrls, ","),
 		ClientID:        kafkaClientId,
 		NewConsumerFunc: consumer.NewKafkaTransactionConsumer,
-		DetectionTime:   time.Second,
+		DetectionTime:   3 * time.Second,
 		UseCase:         transactionsUseCase.NewUseCase(UsersRepo.NewPgRepository(db), transactionsRepo.NewPgRepository(db)),
 		Logger:          &logger,
 	})

@@ -2,11 +2,13 @@ package processor
 
 import (
 	"context"
+	"fmt"
 	"github.com/Inspirate789/SOK-golang-test-task/internal/transactions/consumer"
 	transactionsUseCase "github.com/Inspirate789/SOK-golang-test-task/internal/transactions/usecase"
 	"github.com/rs/zerolog"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/topics"
+	"strings"
 	"time"
 )
 
@@ -48,6 +50,7 @@ func NewKafkaProcessor(cfg *KafkaProcessorConfig) *KafkaProcessor {
 }
 
 func (kp *KafkaProcessor) getTopicsList(ctx context.Context) ([]string, error) {
+	kp.logger.Debug().Msg("Check for new topics")
 	kafkaTopics, err := topics.List(ctx, kp.client)
 	if err != nil {
 		return nil, err
@@ -73,7 +76,11 @@ func (kp *KafkaProcessor) topicsDetectionRoutine(ctx context.Context, newTopics 
 				return err
 			}
 			for _, topic := range topicNames {
+				if strings.HasPrefix(topic, "__") {
+					continue
+				}
 				if _, inMap := kp.consumers[topic]; !inMap {
+					kp.logger.Debug().Msg(fmt.Sprintf("New topic detected: %s", topic))
 					newTopics <- topic
 				}
 			}
@@ -86,8 +93,10 @@ func (kp *KafkaProcessor) topicsDetectionRoutine(ctx context.Context, newTopics 
 
 func (kp *KafkaProcessor) messageDetectionRoutine(ctx context.Context, consumer consumer.TransactionConsumer, transactions chan consumer.TransactionDTO) error {
 	for {
+		kp.logger.Debug().Msg("Consumer is waiting for new transaction")
 		transaction, err := consumer.Consume(ctx)
 		if err != nil {
+			kp.logger.Debug().Msg(fmt.Sprintf("Consume new transaction: %v", transaction))
 			transactions <- transaction
 		} else {
 			ctx.Done()
@@ -108,6 +117,7 @@ OUTER:
 	for {
 		select {
 		case transaction := <-transactions:
+			kp.logger.Debug().Msg(fmt.Sprintf("Start processing transaction: %v", transaction))
 			processErr = kp.useCase.PerformTransaction(transaction)
 			if processErr != nil {
 				ctx.Done()
@@ -148,6 +158,7 @@ OUTER:
 				Topic:      newTopic,
 			})
 			go func() {
+				kp.logger.Debug().Msg(fmt.Sprintf("Consumer for topic %s started", newTopic))
 				consumeErr = kp.consumerRoutine(ctx, kp.consumers[newTopic])
 			}()
 		case <-ctx.Done():

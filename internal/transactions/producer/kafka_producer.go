@@ -16,7 +16,9 @@ type KafkaProducerConfig struct {
 }
 
 type KafkaTransactionProducer struct {
-	writer *kafka.Writer
+	writer     *kafka.Writer
+	topicNames map[string]bool
+	brokerUrls []string
 }
 
 func NewKafkaTransactionProducer(cfg *KafkaProducerConfig) TransactionProducer {
@@ -29,10 +31,23 @@ func NewKafkaTransactionProducer(cfg *KafkaProducerConfig) TransactionProducer {
 			ReadTimeout:  10 * time.Second,
 			Compression:  compress.Snappy,
 		},
+		topicNames: make(map[string]bool),
+		brokerUrls: cfg.BrokerUrls,
 	}
 }
 
+func (ktp *KafkaTransactionProducer) createTopic(ctx context.Context, topicName string) (*kafka.Conn, error) {
+	return kafka.DialLeader(ctx, "tcp", ktp.brokerUrls[0], topicName, 0)
+}
+
 func (ktp *KafkaTransactionProducer) Produce(ctx context.Context, queueName string, transaction consumer.TransactionDTO) error {
+	if _, inMap := ktp.topicNames[queueName]; !inMap {
+		_, err := ktp.createTopic(ctx, queueName)
+		if err != nil {
+			return models.ErrCreateTopicWrap(err)
+		}
+	}
+
 	msg, err := json.Marshal(transaction)
 	if err != nil {
 		return models.ErrEncodingMsgWrap(err)
@@ -49,6 +64,7 @@ func (ktp *KafkaTransactionProducer) Produce(ctx context.Context, queueName stri
 	if err != nil {
 		return models.ErrSendingMsgWrap(err)
 	}
+	// log.Debug().Msg(fmt.Sprintf("Send message: %v", string(msg)))
 	return nil
 }
 

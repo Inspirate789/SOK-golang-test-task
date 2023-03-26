@@ -23,7 +23,7 @@ func NewKafkaTransactionConsumer(cfg *KafkaConsumerConfig) TransactionConsumer {
 		Brokers:         cfg.BrokerUrls,
 		GroupID:         cfg.ClientID,
 		Topic:           cfg.Topic,
-		MinBytes:        10e3,
+		MinBytes:        1,
 		MaxBytes:        10e6,
 		MaxWait:         1 * time.Second,
 		ReadLagInterval: -1,
@@ -35,7 +35,7 @@ func NewKafkaTransactionConsumer(cfg *KafkaConsumerConfig) TransactionConsumer {
 }
 
 func (ktc *KafkaTransactionConsumer) Consume(ctx context.Context) (TransactionDTO, error) {
-	msg, err := ktc.reader.ReadMessage(context.Background())
+	msg, err := ktc.reader.ReadMessage(ctx)
 	if err != nil {
 		return TransactionDTO{}, models.ErrReceivingMsgWrap(err)
 	}
@@ -47,6 +47,7 @@ func (ktc *KafkaTransactionConsumer) Consume(ctx context.Context) (TransactionDT
 	}
 
 	// TODO: add log record about receiving message
+	// log.Debug().Msg(fmt.Sprintf("Receive message: %v", transaction))
 
 	return transaction, nil
 }
